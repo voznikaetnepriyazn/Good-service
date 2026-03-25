@@ -13,7 +13,7 @@ var (
 	ErrUrlExist    = errors.New("url exist")
 )
 
-type OrderService interface {
+type GoodService interface {
 	AddURL(good good.Good) (uuid.UUID, error)
 
 	DeleteURL(id uuid.UUID) error
@@ -24,11 +24,11 @@ type OrderService interface {
 
 	UpdateURL(good good.Good) error
 
-	GetListOfGoodsByBrand(id uuid.UUID) []good.Good
+	GetListOfGoodsByBrand(id uuid.UUID) ([]good.Good, error)
 
-	GetListOfGoodsByType(id uuid.UUID) []good.Good
+	GetListOfGoodsByType(id uuid.UUID) ([]good.Good, error)
 
-	IsAvaliableForOrder(id uuid.UUID) bool
+	IsAvaliableForOrder(id uuid.UUID) (bool, error)
 
-	RestOfGood(id uuid.UUID) int
+	RestOfGood(id uuid.UUID) (int, error)
 }
