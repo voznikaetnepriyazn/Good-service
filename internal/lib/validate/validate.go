@@ -28,7 +28,7 @@ func Validate(ctx *fasthttp.RequestCtx, req interface{}, log *slog.Logger) bool 
 
 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 		ctx.SetContentType("application/json")
-		body, _ := json.Marshal(map[string]interface{}{
+		body, _ := json.Marshal(map[string]any{
 			"error":   "validation failed",
 			"details": FormatValidationError(validateErr),
 		})
