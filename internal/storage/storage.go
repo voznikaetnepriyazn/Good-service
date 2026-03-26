@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	ErrUrlNotFound = errors.New("url not found")
-	ErrUrlExist    = errors.New("url exist")
+	ErrUrlNotFound   = errors.New("url not found")
+	ErrUrlExist      = errors.New("url exist")
+	ErrGoodsNotFound = errors.New("goods not found")
 )
 
 type GoodService interface {

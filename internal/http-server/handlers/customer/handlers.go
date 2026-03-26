@@ -252,6 +252,42 @@ func NewUpdate(log *slog.Logger, update storage.GoodService) fasthttp.RequestHan
 	}
 }
 
+func NewGetListOfGoodsByBrand(log *slog.Logger, ord storage.GoodService) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		const op = "handlers.url.getListOfGoodsByBrand.New"
+
+		log := logger.FromCtx(ctx)
+
+		log.Info("handling request")
+
+		uuidParam, ok := uuidparam.UUIDFromCtx(ctx, "id")
+		if ok {
+			log.Info("took id from context")
+		}
+
+		resURL, err := ord.GetListOfGoodsByType(uuidParam)
+		if errors.Is(err, storage.ErrGoodsNotFound) {
+			log.Warn("goods not found")
+
+			ctx.SetStatusCode(fasthttp.StatusBadRequest)
+			ctx.SetContentType("application/json")
+			ctx.SetBodyString(`"not found"`)
+		}
+
+		if err != nil {
+			log.Error("failed to get goods", sl.Err(err))
+
+			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+			ctx.SetContentType("application/json")
+			ctx.SetBodyString(`"internal server errror"`)
+		}
+
+		log.Info("got goods", slog.Any("goods", resURL))
+
+		responseOK(ctx)
+	}
+}
+
 func NewGetListOfGoodsByType(log *slog.Logger, ord storage.GoodService) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		const op = "handlers.url.getListOfGoodsByType.New"
@@ -266,8 +302,8 @@ func NewGetListOfGoodsByType(log *slog.Logger, ord storage.GoodService) fasthttp
 		}
 
 		resURL, err := ord.GetListOfGoodsByType(uuidParam)
-		if errors.Is(err, storage.ErrUrlNotFound) {
-			log.Info("url not found", slog.String("id", uuidParam.String()))
+		if errors.Is(err, storage.ErrGoodsNotFound) {
+			log.Info("goods not found")
 
 			ctx.SetStatusCode(fasthttp.StatusBadRequest)
 			ctx.SetContentType("application/json")
@@ -275,14 +311,14 @@ func NewGetListOfGoodsByType(log *slog.Logger, ord storage.GoodService) fasthttp
 		}
 
 		if err != nil {
-			log.Error("failed to get url", sl.Err(err))
+			log.Error("failed to get goods", sl.Err(err))
 
 			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 			ctx.SetContentType("application/json")
 			ctx.SetBodyString(`"internal server errror"`)
 		}
 
-		log.Info("got urls", slog.Any("url", resURL))
+		log.Info("got goods", slog.Any("goods", resURL))
 
 		responseOK(ctx)
 	}
@@ -311,14 +347,14 @@ func NewIsAvaliableForOrder(log *slog.Logger, ord storage.GoodService) fasthttp.
 		}
 
 		if err != nil {
-			log.Error("failed to found url", sl.Err(err))
+			log.Error("failed to check avaliability", sl.Err(err))
 
 			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 			ctx.SetContentType("application/json")
 			ctx.SetBodyString(`"internal server errror"`)
 		}
 
-		log.Info("avaliable for order", slog.Any("url", resURL))
+		log.Info("avaliable for order", slog.Any("avaliable", resURL))
 
 		responseOK(ctx)
 	}
@@ -343,18 +379,18 @@ func NewRestOfGood(log *slog.Logger, ord storage.GoodService) fasthttp.RequestHa
 
 			ctx.SetStatusCode(fasthttp.StatusBadRequest)
 			ctx.SetContentType("application/json")
-			ctx.SetBodyString(`"not found"`)
+			ctx.SetBodyString(`"id not found"`)
 		}
 
 		if err != nil {
-			log.Error("failed to found url", sl.Err(err))
+			log.Error("failed to watch rest", sl.Err(err))
 
 			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 			ctx.SetContentType("application/json")
 			ctx.SetBodyString(`"internal server errror"`)
 		}
 
-		log.Info("rest", slog.Any("url", resURL))
+		log.Info("rest of good", slog.Any("rest", resURL))
 
 		responseOK(ctx)
 	}
