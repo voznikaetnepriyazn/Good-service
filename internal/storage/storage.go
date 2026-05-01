@@ -21,7 +21,7 @@ type GoodService interface {
 
 	GetAllURL() ([]good.Good, error)
 
-	GetByIdURL(id uuid.UUID) (uuid.UUID, error)
+	GetByIdURL(id uuid.UUID) (good.Good, error)
 
 	UpdateURL(good good.Good) error
 
@@ -31,5 +31,5 @@ type GoodService interface {
 
 	IsAvaliableForOrder(id uuid.UUID) (bool, error)
 
-	RestOfGood(id uuid.UUID) (int, error)
+	RestOfGood(id uuid.UUID) (int16, error)
 }
